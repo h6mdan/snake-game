@@ -316,9 +316,12 @@ export default function Snake() {
         const newScore = prev + points;
         if (newScore > highScore) {
           setHighScore(newScore);
-          window.storage.set('snakeHighScore', newScore.toString()).catch(err => {
+          // Save to localStorage instead
+          try {
+            localStorage.setItem('snakeHighScore', newScore.toString());
+          } catch (err) {
             console.log('Failed to save high score:', err);
-          });
+          }
         }
         return newScore;
       });
@@ -383,11 +386,11 @@ export default function Snake() {
   }, [gameState, gameLoop]);
 
   useEffect(() => {
-    const loadHighScore = async () => {
+    const loadHighScore = () => {
       try {
-        const result = await window.storage.get('snakeHighScore');
-        if (result && result.value) {
-          setHighScore(parseInt(result.value, 10));
+        const saved = localStorage.getItem('snakeHighScore');
+        if (saved) {
+          setHighScore(parseInt(saved, 10));
         }
       } catch (error) {
         console.log('No saved high score yet');
